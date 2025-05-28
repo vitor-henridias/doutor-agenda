@@ -47,25 +47,22 @@ const SignInForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof signInSchema>) {
-    const { data, error } = await authClient.signIn.email(
-      {
-        email: values.email,
-        password: values.password,
-        rememberMe: false,
-      },
-      {
-        onSuccess: () => {
-          router.push("/dashboard");
-        },
-      },
-    );
+    const { data, error } = await authClient.signIn.email({
+      email: values.email,
+      password: values.password,
+      rememberMe: false,
+    });
 
     if (error) {
-      return toast.error("Email ou senha inválidos");
+      if (error.code === "INVALID_EMAIL_OR_PASSWORD") {
+        return toast.error("Email ou senha inválidos");
+      }
+
+      return toast.error("Erro ao fazer login");
     }
 
     if (data) {
-      console.log(data);
+      router.push("/dashboard");
     }
   }
 
